@@ -1,12 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <script src="https://cdn.auth0.com/js/lock/11.30/lock.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        #lock-container {
+            width: 100%;
+            max-width: 400px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome</h1>
-    <button onclick="window.location.href='https://underminingly-acarpelous-marquerite.ngrok-free.dev/webhook-test/login'">
-        Login with Auth0
-    </button>
+    <div id="lock-container"></div>
+
+    <script>
+        var lock = new Auth0Lock(
+            'YOUR_CLIENT_ID',
+            'YOUR_DOMAIN.auth0.com',
+            {
+                container: 'lock-container',
+                auth: {
+                    redirectUrl: 'https://your-n8n.com/webhook/auth-callback',
+                    responseType: 'code',
+                    params: {
+                        scope: 'openid profile email'
+                    }
+                },
+                theme: {
+                    primaryColor: '#667eea'
+                },
+                languageDictionary: {
+                    title: "Welcome"
+                },
+                allowSignUp: true,
+                allowLogin: true,
+                socialButtonStyle: 'big'
+            }
+        );
+
+        lock.show();
+    </script>
 </body>
 </html>
