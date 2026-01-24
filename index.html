@@ -7,7 +7,7 @@
     <script src="https://cdn.auth0.com/js/lock/11.30/lock.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -18,6 +18,10 @@
         #lock-container {
             width: 100%;
             max-width: 400px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
     </style>
 </head>
@@ -26,26 +30,28 @@
 
     <script>
         var lock = new Auth0Lock(
-            'YOUR_CLIENT_ID',
-            'YOUR_DOMAIN.auth0.com',
+            'YOUR_CLIENT_ID',  // Replace with your Auth0 Client ID
+            'YOUR_DOMAIN.auth0.com',  // Replace with your Auth0 domain
             {
                 container: 'lock-container',
                 auth: {
-                    redirectUrl: 'https://your-n8n.com/webhook/auth-callback',
+                    redirectUrl: 'https://underminingly-acarpelous-marquerite.ngrok-free.dev/webhook-test/login',
                     responseType: 'code',
                     params: {
                         scope: 'openid profile email'
                     }
                 },
                 theme: {
-                    primaryColor: '#667eea'
+                    primaryColor: '#667eea',
+                    logo: '' // Optional: add your logo URL here
                 },
                 languageDictionary: {
-                    title: "Welcome"
+                    title: "Welcome Back"
                 },
                 allowSignUp: true,
                 allowLogin: true,
-                socialButtonStyle: 'big'
+                socialButtonStyle: 'big',
+                rememberLastLogin: false
             }
         );
 
