@@ -3,32 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Sign In</title>
     <script src="https://cdn.auth0.com/js/lock/11.30/lock.min.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Google Sans', 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
         }
+
         #lock-container {
             width: 100%;
-            max-width: 400px;
-            background: white;
+            max-width: 450px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            padding: 48px 40px 36px;
+        }
+
+        .profile-container {
+            display: none;
+            text-align: center;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            padding: 48px 40px;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .profile-container.active {
+            display: block;
+        }
+
+        .profile-pic {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            border: 3px solid #f1f3f4;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 400;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            color: #5f6368;
+            margin-bottom: 32px;
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e8f5e9;
+            color: #1e8e3e;
+            padding: 4px 12px;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .profile-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .info-label {
+            color: #5f6368;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #202124;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .success-icon {
+            width: 48px;
+            height: 48px;
+            background: #1a73e8;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .logout-btn {
+            background: #ffffff;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #f8f9fa;
+            border-color: #1a73e8;
+        }
+
+        /* Override Auth0 Lock styles to match Google aesthetic */
+        .auth0-lock.auth0-lock .auth0-lock-header {
+            display: none !important;
+        }
+
+        .auth0-lock.auth0-lock .auth0-lock-widget {
+            box-shadow: none !important;
         }
     </style>
 </head>
 <body>
     <div id="lock-container"></div>
+    
+    <div id="profile-container" class="profile-container">
+        <div class="success-icon">✓</div>
+        <img id="profile-pic" class="profile-pic" src="" alt="Profile Picture">
+        <h1 class="profile-name" id="profile-name"></h1>
+        <p class="profile-email" id="profile-email"></p>
+        <div class="verified-badge" id="verified-badge">
+            <span>✓</span>
+            <span>Email Verified</span>
+        </div>
+        
+        <div class="profile-info">
+            <div class="info-row">
+                <span class="info-label">User ID</span>
+                <span class="info-value" id="user-id"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Logged in at</span>
+                <span class="info-value" id="login-time"></span>
+            </div>
+        </div>
+        
+        <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
 
     <script>
+        // Check if user is already logged in (from URL parameters or session)
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Initialize Auth0 Lock
         var lock = new Auth0Lock(
             'HQu7rBbszIifhmlR7u6Vz2CCllcIKqwu',
             'dev-swwei5bl07skoomv.us.auth0.com',
@@ -42,11 +190,11 @@
                     }
                 },
                 theme: {
-                    primaryColor: '#667eea',
-                    logo: '' // Optional: add your logo URL here
+                    primaryColor: '#1a73e8',
+                    logo: ''
                 },
                 languageDictionary: {
-                    title: "Welcome Back"
+                    title: ""
                 },
                 allowSignUp: true,
                 allowLogin: true,
@@ -55,7 +203,15 @@
             }
         );
 
-        lock.show();
+        // Only show lock if not redirected from successful auth
+        if (!window.location.search.includes('user=')) {
+            lock.show();
+        }
+
+        function logout() {
+            // Clear any session data
+            window.location.href = 'https://dev-swwei5bl07skoomv.us.auth0.com/v2/logout?client_id=HQu7rBbszIifhmlR7u6Vz2CCllcIKqwu&returnTo=' + encodeURIComponent(window.location.origin + window.location.pathname);
+        }
     </script>
 </body>
 </html>
