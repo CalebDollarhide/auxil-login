@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Google Sans', 'Segoe UI', Roboto, Arial, sans-serif;
-            background: #ffffff;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -183,7 +183,7 @@
             {
                 container: 'lock-container',
                 auth: {
-                    redirectUrl: 'https://underminingly-acarpelous-marquerite.ngrok-free.dev/webhook/login',
+                    redirectUrl: 'https://underminingly-acarpelous-marquerite.ngrok-free.dev/webhook/auth-callback',
                     responseType: 'code',
                     params: {
                         scope: 'openid profile email'
