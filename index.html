@@ -216,7 +216,7 @@
 
         function login() {
             document.getElementById('loading-msg').style.display = 'block';
-            webAuth.authorize();
+            webAuth.authorize({ prompt: 'login' });
         }
 
         function logout() {
