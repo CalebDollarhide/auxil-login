@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In</title>
-    <script src="https://cdn.auth0.com/js/lock/11.30/lock.min.js"></script>
+    <script src="https://cdn.auth0.com/js/auth0/9.16.4/auth0.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -22,13 +22,45 @@
             padding: 20px;
         }
 
-        #lock-container {
+        #login-container {
             width: 100%;
             max-width: 450px;
             background: #ffffff;
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
             padding: 48px 40px 36px;
+            text-align: center;
+        }
+
+        .app-logo {
+            font-size: 32px;
+            font-weight: 300;
+            color: #202124;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .app-subtitle {
+            font-size: 14px;
+            color: #5f6368;
+            margin-bottom: 40px;
+        }
+
+        .sign-in-btn {
+            background: #1a73e8;
+            color: #ffffff;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .sign-in-btn:hover {
+            background: #1557b0;
         }
 
         .profile-container {
@@ -135,19 +167,22 @@
             border-color: #1a73e8;
         }
 
-        /* Override Auth0 Lock styles to match Google aesthetic */
-        .auth0-lock.auth0-lock .auth0-lock-header {
-            display: none !important;
-        }
-
-        .auth0-lock.auth0-lock .auth0-lock-widget {
-            box-shadow: none !important;
+        .loading {
+            color: #5f6368;
+            font-size: 14px;
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
-    <div id="lock-container"></div>
-    
+
+    <div id="login-container">
+        <div class="app-logo">Auxil</div>
+        <p class="app-subtitle">Sign in to continue</p>
+        <button class="sign-in-btn" onclick="login()">Sign In</button>
+        <p class="loading" id="loading-msg" style="display:none;">Redirecting...</p>
+    </div>
+
     <div id="profile-container" class="profile-container">
         <div class="success-icon">✓</div>
         <img id="profile-pic" class="profile-pic" src="" alt="Profile Picture">
@@ -157,7 +192,6 @@
             <span>✓</span>
             <span>Email Verified</span>
         </div>
-        
         <div class="profile-info">
             <div class="info-row">
                 <span class="info-label">User ID</span>
@@ -168,50 +202,27 @@
                 <span class="info-value" id="login-time"></span>
             </div>
         </div>
-        
         <button class="logout-btn" onclick="logout()">Sign Out</button>
     </div>
 
     <script>
-        // Check if user is already logged in (from URL parameters or session)
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        // Initialize Auth0 Lock
-        var lock = new Auth0Lock(
-            'HQu7rBbszIifhmlR7u6Vz2CCllcIKqwu',
-            'dev-swwei5bl07skoomv.us.auth0.com',
-            {
-                container: 'lock-container',
-                auth: {
-                    redirectUrl: 'https://underminingly-acarpelous-marquerite.ngrok-free.dev/webhook/auth-callback',
-                    responseType: 'code',
-                    params: {
-                        scope: 'openid profile email'
-                    }
-                },
-                theme: {
-                    primaryColor: '#1a73e8',
-                    logo: ''
-                },
-                languageDictionary: {
-                    title: ""
-                },
-                allowSignUp: true,
-                allowLogin: true,
-                socialButtonStyle: 'big',
-                rememberLastLogin: false
-            }
-        );
+        var webAuth = new auth0.WebAuth({
+            domain: 'dev-swwei5bl07skoomv.us.auth0.com',
+            clientID: 'HQu7rBbszIifhmlR7u6Vz2CCllcIKqwu',
+            redirectUri: 'https://underminingly-acarpelous-marquerite.ngrok-free.dev/webhook/auth-callback',
+            responseType: 'code',
+            scope: 'openid profile email'
+        });
 
-        // Only show lock if not redirected from successful auth
-        if (!window.location.search.includes('user=')) {
-            lock.show();
+        function login() {
+            document.getElementById('loading-msg').style.display = 'block';
+            webAuth.authorize();
         }
 
         function logout() {
-            // Clear any session data
             window.location.href = 'https://dev-swwei5bl07skoomv.us.auth0.com/v2/logout?client_id=HQu7rBbszIifhmlR7u6Vz2CCllcIKqwu&returnTo=' + encodeURIComponent(window.location.origin + window.location.pathname);
         }
     </script>
+
 </body>
 </html>
